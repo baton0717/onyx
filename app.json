@@ -2,6 +2,7 @@
   "expo": {
     "name": "onyx",
     "slug": "onyx",
+    "owner": "baton0717",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -29,6 +30,11 @@
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1c4ef34f-44f8-4867-b4b6-284f7991176f"
+      }
+    }
   }
 }
