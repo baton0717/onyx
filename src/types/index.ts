@@ -38,3 +38,10 @@ export type RootStackParamList = {
   UserDetail: { user: UserProfile };
   Chat: { match: Match };
 };
+
+export type AuthStackParamList = {
+  Welcome: undefined;
+  SignUp: undefined;
+  Login: undefined;
+  PhoneVerification: undefined;
+};
