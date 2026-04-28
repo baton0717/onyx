@@ -4,20 +4,22 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  FlatList,
   TouchableOpacity,
   Dimensions,
   StatusBar,
   SafeAreaView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme';
 import { ProfileCard } from '../components/ProfileCard';
-import { UserProfile } from '../types';
+import { UserProfile, RootStackParamList } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Mock data — replace with Supabase query
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+
 const MOCK_USERS: UserProfile[] = [
   {
     id: '1',
@@ -25,7 +27,7 @@ const MOCK_USERS: UserProfile[] = [
     age: 27,
     job: 'UX 디자이너',
     bio: '주말엔 카페 투어, 평일엔 전시회. 조용한 곳에서 커피 마시며 이야기 나눌 사람 찾아요.',
-    photos: ['https://picsum.photos/seed/1/400/600'],
+    photos: ['https://picsum.photos/seed/jiyun/400/600'],
     tags: ['카페', '전시', '미니멀리즘'],
     distance: 1.2,
     compatibilityScore: 94,
@@ -37,7 +39,7 @@ const MOCK_USERS: UserProfile[] = [
     age: 29,
     job: '마케터',
     bio: '좋아하는 것: 새벽 산책, 재즈, 와인 한 잔. 진지한 대화를 좋아합니다.',
-    photos: ['https://picsum.photos/seed/2/400/600'],
+    photos: ['https://picsum.photos/seed/seoyeon/400/600'],
     tags: ['와인', '재즈', '독서'],
     distance: 2.8,
     compatibilityScore: 89,
@@ -49,7 +51,7 @@ const MOCK_USERS: UserProfile[] = [
     age: 26,
     job: '개발자',
     bio: '코딩하다 지치면 러닝. 같이 건강한 루틴 만들어갈 사람 찾아요.',
-    photos: ['https://picsum.photos/seed/3/400/600'],
+    photos: ['https://picsum.photos/seed/mina/400/600'],
     tags: ['러닝', '헬스', '코딩'],
     distance: 0.9,
     compatibilityScore: 85,
@@ -61,7 +63,7 @@ const MOCK_USERS: UserProfile[] = [
     age: 28,
     job: '작가',
     bio: '글 쓰는 사람. 좋은 문장 하나로 하루를 버팁니다.',
-    photos: ['https://picsum.photos/seed/4/400/600'],
+    photos: ['https://picsum.photos/seed/haeun/400/600'],
     tags: ['글쓰기', '책', '산책'],
     distance: 4.1,
     compatibilityScore: 82,
@@ -73,7 +75,7 @@ const MOCK_USERS: UserProfile[] = [
     age: 25,
     job: '포토그래퍼',
     bio: '렌즈로 세상을 봅니다. 같이 산 타고 사진 찍을 사람 구해요.',
-    photos: ['https://picsum.photos/seed/5/400/600'],
+    photos: ['https://picsum.photos/seed/yujin/400/600'],
     tags: ['사진', '등산', '여행'],
     distance: 3.3,
     compatibilityScore: 78,
@@ -85,10 +87,82 @@ const MOCK_USERS: UserProfile[] = [
     age: 30,
     job: '변호사',
     bio: '일 열심히 하고 쉴 때는 제대로 쉬는 편. 맛있는 거 먹으러 다니는 걸 좋아해요.',
-    photos: ['https://picsum.photos/seed/6/400/600'],
+    photos: ['https://picsum.photos/seed/chaewon/400/600'],
     tags: ['맛집', '와인', '영화'],
     distance: 1.7,
     compatibilityScore: 76,
+    isVerified: true,
+  },
+  {
+    id: '7',
+    name: '나연',
+    age: 27,
+    job: '플로리스트',
+    bio: '꽃과 함께하는 하루하루. 소소한 것들에서 행복을 찾는 사람이에요.',
+    photos: ['https://picsum.photos/seed/nayeon/400/600'],
+    tags: ['꽃', '요리', '피크닉'],
+    distance: 2.1,
+    compatibilityScore: 74,
+    isVerified: true,
+  },
+  {
+    id: '8',
+    name: '소희',
+    age: 24,
+    job: '대학원생',
+    bio: '심리학 공부 중. 사람의 마음이 왜 움직이는지 알고 싶어요.',
+    photos: ['https://picsum.photos/seed/sohee/400/600'],
+    tags: ['심리', '독서', '음악'],
+    distance: 5.0,
+    compatibilityScore: 71,
+    isVerified: false,
+  },
+  {
+    id: '9',
+    name: '예나',
+    age: 31,
+    job: '건축가',
+    bio: '공간을 설계하는 사람. 아름다운 도시를 함께 걷고 싶어요.',
+    photos: ['https://picsum.photos/seed/yena/400/600'],
+    tags: ['건축', '여행', '아트'],
+    distance: 3.8,
+    compatibilityScore: 69,
+    isVerified: true,
+  },
+  {
+    id: '10',
+    name: '다은',
+    age: 26,
+    job: '바리스타',
+    bio: '커피 한 잔으로 하루를 시작해요. 좋은 원두처럼 깊은 사람이 되고 싶어요.',
+    photos: ['https://picsum.photos/seed/daeun/400/600'],
+    tags: ['커피', '음악', '고양이'],
+    distance: 0.6,
+    compatibilityScore: 67,
+    isVerified: true,
+  },
+  {
+    id: '11',
+    name: '리아',
+    age: 28,
+    job: '피아니스트',
+    bio: '음악으로 말하는 사람. 조용한 카페에서 피아노 소리 들으며 이야기 나눠요.',
+    photos: ['https://picsum.photos/seed/ria/400/600'],
+    tags: ['클래식', '피아노', '와인'],
+    distance: 4.5,
+    compatibilityScore: 65,
+    isVerified: false,
+  },
+  {
+    id: '12',
+    name: '수빈',
+    age: 29,
+    job: '셰프',
+    bio: '맛있는 음식이 세상을 더 좋게 만든다고 믿어요. 같이 먹고 또 먹어요.',
+    photos: ['https://picsum.photos/seed/subin/400/600'],
+    tags: ['요리', '맛집', '와인'],
+    distance: 2.4,
+    compatibilityScore: 63,
     isVerified: true,
   },
 ];
@@ -109,6 +183,7 @@ function getTimeUntilNoon(): string {
 }
 
 export const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<Nav>();
   const [featuredUser] = useState(MOCK_USERS[0]);
   const [gridUsers] = useState(MOCK_USERS.slice(1));
 
@@ -152,7 +227,7 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.featuredContainer}>
           <ProfileCard
             user={featuredUser}
-            onPress={() => {}}
+            onPress={() => navigation.navigate('UserDetail', { user: featuredUser })}
             onLike={() => handleLike(featuredUser.id)}
             onSkip={() => handleSkip(featuredUser.id)}
           />
@@ -172,7 +247,7 @@ export const HomeScreen: React.FC = () => {
             <ProfileCard
               key={user.id}
               user={user}
-              onPress={() => {}}
+              onPress={() => navigation.navigate('UserDetail', { user })}
               onLike={() => handleLike(user.id)}
               onSkip={() => handleSkip(user.id)}
               isCompact
@@ -181,7 +256,11 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         {/* Values card prompt */}
-        <TouchableOpacity style={styles.valuesCard}>
+        <TouchableOpacity
+          style={styles.valuesCard}
+          onPress={() => navigation.navigate('ValuesQuiz')}
+          activeOpacity={0.85}
+        >
           <LinearGradient
             colors={['#1A1A1A', '#222216']}
             style={styles.valuesGradient}

@@ -6,16 +6,21 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
 import { MatchesScreen } from '../screens/MatchesScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { UserDetailScreen } from '../screens/UserDetailScreen';
+import { ChatScreen } from '../screens/ChatScreen';
+import { ValuesQuizScreen } from '../screens/ValuesQuizScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 import { WelcomeScreen } from '../screens/auth/WelcomeScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { PhoneVerificationScreen } from '../screens/auth/PhoneVerificationScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { Colors, Typography, Spacing } from '../theme';
-import { RootTabParamList, AuthStackParamList } from '../types';
+import { RootTabParamList, AuthStackParamList, RootStackParamList } from '../types';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const TabIcon: React.FC<{ focused: boolean; label: string; icon: string }> = ({
   focused,
@@ -81,7 +86,7 @@ const MainTabs: React.FC = () => (
         tabBarIcon: ({ focused }) => (
           <TabIcon focused={focused} label="매칭" icon="♡" />
         ),
-        tabBarBadge: 2,
+        tabBarBadge: 4,
         tabBarBadgeStyle: {
           backgroundColor: Colors.accent,
           color: '#000',
@@ -99,6 +104,32 @@ const MainTabs: React.FC = () => (
       }}
     />
   </Tab.Navigator>
+);
+
+const AppContent: React.FC = () => (
+  <RootStack.Navigator screenOptions={{ headerShown: false }}>
+    <RootStack.Screen name="Main" component={MainTabs} />
+    <RootStack.Screen
+      name="UserDetail"
+      component={UserDetailScreen}
+      options={{ animation: 'slide_from_right' }}
+    />
+    <RootStack.Screen
+      name="Chat"
+      component={ChatScreen}
+      options={{ animation: 'slide_from_right' }}
+    />
+    <RootStack.Screen
+      name="ValuesQuiz"
+      component={ValuesQuizScreen}
+      options={{ animation: 'slide_from_bottom' }}
+    />
+    <RootStack.Screen
+      name="Settings"
+      component={SettingsScreen}
+      options={{ animation: 'slide_from_right' }}
+    />
+  </RootStack.Navigator>
 );
 
 const AuthNavigator: React.FC = () => (
@@ -123,7 +154,7 @@ export const AppNavigator: React.FC = () => {
 
   return (
     <NavigationContainer>
-      {session && isVerified ? <MainTabs /> : <AuthNavigator />}
+      {session && isVerified ? <AppContent /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };

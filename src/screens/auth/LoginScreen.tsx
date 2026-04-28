@@ -50,14 +50,13 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.form}>
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>이메일</Text>
+            <Text style={styles.label}>아이디</Text>
             <TextInput
               style={styles.input}
-              placeholder="이메일 주소"
+              placeholder="아이디 입력 (예: test)"
               placeholderTextColor="#555555"
               value={email}
               onChangeText={(v) => { setEmail(v); setError(''); }}
-              keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
             />

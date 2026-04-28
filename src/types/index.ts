@@ -37,6 +37,8 @@ export type RootStackParamList = {
   Main: undefined;
   UserDetail: { user: UserProfile };
   Chat: { match: Match };
+  ValuesQuiz: undefined;
+  Settings: undefined;
 };
 
 export type AuthStackParamList = {

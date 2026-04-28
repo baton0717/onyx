@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,18 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  SafeAreaView,
   StatusBar,
+  Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme';
+import { useAuth } from '../contexts/AuthContext';
+import { RootStackParamList } from '../types';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const MY_PROFILE = {
   name: '바톤',
@@ -37,10 +45,38 @@ const SettingRow: React.FC<{ label: string; value?: string; onPress: () => void 
 );
 
 export const ProfileScreen: React.FC = () => {
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<Nav>();
+  const { signOut } = useAuth();
+  const [photo, setPhoto] = useState(MY_PROFILE.photos[0]);
   const progress = MY_PROFILE.compatibilityAnswered / MY_PROFILE.totalQuestions;
 
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('권한 필요', '사진 라이브러리 접근 권한이 필요합니다.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images',
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets[0]) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  const handleSignOut = () => {
+    Alert.alert('로그아웃', '로그아웃 하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      { text: '로그아웃', style: 'destructive', onPress: signOut },
+    ]);
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.background} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
@@ -53,8 +89,8 @@ export const ProfileScreen: React.FC = () => {
         {/* Profile photo + basic info */}
         <View style={styles.profileSection}>
           <View style={styles.photoWrapper}>
-            <Image source={{ uri: MY_PROFILE.photos[0] }} style={styles.photo} />
-            <TouchableOpacity style={styles.photoAddBtn}>
+            <Image source={{ uri: photo }} style={styles.photo} />
+            <TouchableOpacity style={styles.photoAddBtn} onPress={pickImage}>
               <Text style={styles.photoAddIcon}>+</Text>
             </TouchableOpacity>
           </View>
@@ -79,7 +115,10 @@ export const ProfileScreen: React.FC = () => {
           <Text style={styles.progressText}>
             {MY_PROFILE.compatibilityAnswered} / {MY_PROFILE.totalQuestions} 완료
           </Text>
-          <TouchableOpacity style={styles.continueBtn}>
+          <TouchableOpacity
+            style={styles.continueBtn}
+            onPress={() => navigation.navigate('ValuesQuiz')}
+          >
             <Text style={styles.continueBtnText}>이어서 답하기 →</Text>
           </TouchableOpacity>
         </View>
@@ -88,27 +127,48 @@ export const ProfileScreen: React.FC = () => {
         <View style={styles.settingsSection}>
           <Text style={styles.settingsSectionTitle}>설정</Text>
           <View style={styles.settingsCard}>
-            <SettingRow label="나이 범위" value="24 – 35세" onPress={() => {}} />
+            <SettingRow
+              label="나이 범위"
+              value="24 – 35세"
+              onPress={() => navigation.navigate('Settings')}
+            />
             <View style={styles.rowDivider} />
-            <SettingRow label="거리 범위" value="10km 이내" onPress={() => {}} />
+            <SettingRow
+              label="거리 범위"
+              value="10km 이내"
+              onPress={() => navigation.navigate('Settings')}
+            />
             <View style={styles.rowDivider} />
-            <SettingRow label="알림 설정" onPress={() => {}} />
+            <SettingRow
+              label="알림 설정"
+              onPress={() => navigation.navigate('Settings')}
+            />
             <View style={styles.rowDivider} />
-            <SettingRow label="프라이버시" onPress={() => {}} />
+            <SettingRow
+              label="프라이버시"
+              onPress={() => navigation.navigate('Settings')}
+            />
           </View>
 
           <View style={[styles.settingsCard, { marginTop: Spacing.md }]}>
-            <SettingRow label="ONYX 프리미엄" value="무료 플랜" onPress={() => {}} />
+            <SettingRow
+              label="ONYX 프리미엄"
+              value="무료 플랜"
+              onPress={() => navigation.navigate('Settings')}
+            />
             <View style={styles.rowDivider} />
-            <SettingRow label="문의하기" onPress={() => {}} />
+            <SettingRow
+              label="문의하기"
+              onPress={() => navigation.navigate('Settings')}
+            />
             <View style={styles.rowDivider} />
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity style={styles.settingRow} onPress={handleSignOut}>
               <Text style={[styles.settingLabel, { color: Colors.error }]}>로그아웃</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

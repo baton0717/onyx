@@ -9,8 +9,12 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme';
-import { Match } from '../types';
+import { Match, RootStackParamList } from '../types';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const MOCK_MATCHES: Match[] = [
   {
@@ -20,9 +24,9 @@ const MOCK_MATCHES: Match[] = [
       name: '지윤',
       age: 27,
       job: 'UX 디자이너',
-      bio: '',
-      photos: ['https://picsum.photos/seed/1/200/200'],
-      tags: [],
+      bio: '주말엔 카페 투어, 평일엔 전시회.',
+      photos: ['https://picsum.photos/seed/jiyun/200/200'],
+      tags: ['카페', '전시'],
       distance: 1.2,
       compatibilityScore: 94,
       isVerified: true,
@@ -43,9 +47,9 @@ const MOCK_MATCHES: Match[] = [
       name: '서연',
       age: 29,
       job: '마케터',
-      bio: '',
-      photos: ['https://picsum.photos/seed/2/200/200'],
-      tags: [],
+      bio: '새벽 산책, 재즈, 와인 한 잔.',
+      photos: ['https://picsum.photos/seed/seoyeon/200/200'],
+      tags: ['와인', '재즈'],
       distance: 2.8,
       compatibilityScore: 89,
       isVerified: true,
@@ -56,6 +60,51 @@ const MOCK_MATCHES: Match[] = [
     hasUnread: false,
     iceBreakers: [
       { id: 'i3', question: '와인이나 위스키 선호하세요?', category: 'lifestyle' },
+    ],
+  },
+  {
+    id: 'm3',
+    user: {
+      id: '4',
+      name: '하은',
+      age: 28,
+      job: '작가',
+      bio: '글 쓰는 사람.',
+      photos: ['https://picsum.photos/seed/haeun/200/200'],
+      tags: ['글쓰기', '책'],
+      distance: 4.1,
+      compatibilityScore: 82,
+      isVerified: true,
+    },
+    matchedAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    lastMessage: undefined,
+    lastMessageAt: undefined,
+    hasUnread: false,
+    iceBreakers: [
+      { id: 'i4', question: '요즘 읽고 있는 책이 있나요?', category: 'fun' },
+      { id: 'i5', question: '글쓰기는 언제 시작하셨어요?', category: 'values' },
+    ],
+  },
+  {
+    id: 'm4',
+    user: {
+      id: '6',
+      name: '채원',
+      age: 30,
+      job: '변호사',
+      bio: '일 열심히 하고 쉴 때는 제대로.',
+      photos: ['https://picsum.photos/seed/chaewon/200/200'],
+      tags: ['맛집', '와인'],
+      distance: 1.7,
+      compatibilityScore: 76,
+      isVerified: true,
+    },
+    matchedAt: new Date(Date.now() - 1000 * 60 * 60 * 5),
+    lastMessage: '혹시 이번 주말 시간 있으세요? 😄',
+    lastMessageAt: new Date(Date.now() - 1000 * 60 * 45),
+    hasUnread: true,
+    iceBreakers: [
+      { id: 'i6', question: '좋아하는 음식 장르가 있나요?', category: 'lifestyle' },
     ],
   },
 ];
@@ -111,6 +160,7 @@ const MatchItem: React.FC<{ match: Match; onPress: () => void }> = ({
 );
 
 export const MatchesScreen: React.FC = () => {
+  const navigation = useNavigation<Nav>();
   const newMatches = MOCK_MATCHES.filter((m) => !m.lastMessage);
   const chatMatches = MOCK_MATCHES.filter((m) => m.lastMessage);
 
@@ -128,14 +178,21 @@ export const MatchesScreen: React.FC = () => {
         data={chatMatches}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <MatchItem match={item} onPress={() => {}} />
+          <MatchItem
+            match={item}
+            onPress={() => navigation.navigate('Chat', { match: item })}
+          />
         )}
         ListHeaderComponent={() =>
           newMatches.length > 0 ? (
             <View style={styles.newMatchSection}>
               <Text style={styles.newMatchTitle}>새 매칭 ✨</Text>
               {newMatches.map((m) => (
-                <MatchItem key={m.id} match={m} onPress={() => {}} />
+                <MatchItem
+                  key={m.id}
+                  match={m}
+                  onPress={() => navigation.navigate('Chat', { match: m })}
+                />
               ))}
               <View style={styles.divider} />
               <Text style={styles.chatTitle}>대화 중</Text>
